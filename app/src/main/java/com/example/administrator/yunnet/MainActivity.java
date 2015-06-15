@@ -20,12 +20,15 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        RequestQueue requestQueue = YunNet.createRequestQueue(this);
+        final RequestQueue requestQueue = YunNet.createRequestQueue(this);
         Request.RequestListenter<String> requestListenter = new Request.RequestListenter<String>() {
             @Override
             public void onComlete(String response, int tag) {
                 ( (TextView) findViewById(R.id.text)).setText(num+ "-----"+response);
                 num = num+1;
+                if(num==3){
+                    requestQueue.stop();
+                }
             }
             @Override
             public void onError(Exception error, int tag) {
