@@ -4,7 +4,10 @@ import android.os.Handler;
 import android.os.Looper;
 
 import org.apache.http.NameValuePair;
+import org.yun.net.core.http.YunHttp;
+import org.yun.net.core.http.YunHttpFactory;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -16,10 +19,12 @@ import java.util.List;
  */
 public abstract class Request implements Runnable,Comparable<Request>{
     private final int priority;
-    private String url;
-    private List<NameValuePair> nameValuePairList;
-    private int tag;
-    private Handler mainLooperHandler;
+    protected String url;
+    protected List<NameValuePair> nameValuePairList;
+    protected int tag;
+    protected Handler mainLooperHandler;
+    protected HashMap<String,String> httpHeadMap;
+    protected RequestListenter requestListenter;
 
     /**
      * 无参数时默认为Get方式请求
@@ -32,6 +37,7 @@ public abstract class Request implements Runnable,Comparable<Request>{
         this.priority = priority;
         this.url = url;
         this.tag = tag;
+        this.requestListenter =requestListenter;
     }
 
     /**
@@ -48,6 +54,7 @@ public abstract class Request implements Runnable,Comparable<Request>{
         this.url = url;
         this.nameValuePairList = nameValuePairList;
         this.tag = tag;
+        this.requestListenter =requestListenter;
     }
 
     @Override
@@ -55,12 +62,36 @@ public abstract class Request implements Runnable,Comparable<Request>{
         startRequest();
     }
     protected abstract void startRequest();
-    protected abstract void setHttpHead();
+    protected abstract void forResult(String resultStr) throws Exception;
+
+    public void setHttpHead(HashMap<String,String> httpHeadMap){
+        this.httpHeadMap = httpHeadMap;
+    }
+
+    protected YunHttp getYunHttp(){
+       YunHttp yunHttp = YunHttpFactory.createYunHttp(httpHeadMap);
+        return  yunHttp;
+    }
+
+    /**
+     * 设置默认的http头信息
+     */
+    protected void setDefaultHttpHead(){
+        httpHeadMap = new HashMap<String,String>();
+        httpHeadMap.put("Accept", "Accept text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        httpHeadMap.put("Accept-Charset", "uft-8");
+        httpHeadMap.put("Accept-Language", "zh-cn,zh;q=0.5");
+        httpHeadMap.put("Connection", "keep-alive");
+        httpHeadMap.put("User-Agent", "Mozilla/5.0 (Windows NT 6.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2");
+    }
+
 
     @Override
     public int compareTo(Request request) {
         if(priority > request.priority){
             return 1;
+        }else if(priority < request.priority){
+            return -1;
         }
         return 0;
     }

@@ -14,20 +14,16 @@ import java.util.concurrent.PriorityBlockingQueue;
  */
 public class RequestQueue implements Runnable{
     private Looper mainLooper;
-    private static RequestQueue instance;
+    private ExecutorService executorService;
     private PriorityBlockingQueue<Runnable> queue;
-    public static RequestQueue getInstance(Context context){
-        instance = new RequestQueue(context);
-        return instance;
-    }
     private RequestQueue(){
 
     }
-    private RequestQueue(Context context){
+    protected RequestQueue(Context context){
         mainLooper = context.getMainLooper();
         queue = new PriorityBlockingQueue<Runnable>();
-        ExecutorService exec = Executors.newCachedThreadPool();
-        exec.execute(this);
+        executorService = Executors.newCachedThreadPool();
+        executorService.execute(this);
     }
     public void addRequest(Request request){
         request.setMainLooper(mainLooper);
@@ -43,5 +39,8 @@ public class RequestQueue implements Runnable{
                 e.printStackTrace();
             }
         }
+    }
+    public void stop(){
+        executorService.shutdown();
     }
 }

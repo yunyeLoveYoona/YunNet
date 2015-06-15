@@ -2,16 +2,48 @@ package com.example.administrator.yunnet;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import org.yun.net.core.Request;
+import org.yun.net.core.RequestQueue;
+import org.yun.net.core.YunNet;
+import org.yun.net.core.requests.StringRequest;
 
 
 public class MainActivity extends ActionBarActivity {
+    int num =0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        RequestQueue requestQueue = YunNet.createRequestQueue(this);
+        Request.RequestListenter<String> requestListenter = new Request.RequestListenter<String>() {
+            @Override
+            public void onComlete(String response, int tag) {
+                ( (TextView) findViewById(R.id.text)).setText(num+ "-----"+response);
+                num = num+1;
+            }
+            @Override
+            public void onError(Exception error, int tag) {
+                Log.v("yunye",error.toString());
+            }
+        };
+        StringRequest request = new StringRequest(1,"http://blog.csdn.net/blue_jjw/article/details/8768624"
+        ,1000,requestListenter);
+        requestQueue.addRequest(request);
+        StringRequest request1 = new StringRequest(2,"http://www.ifeng.com/?tongji=baiduxinshouye"
+                ,1002,requestListenter);
+        requestQueue.addRequest(request1);
+        StringRequest request2 = new StringRequest(1,"http://www.csdn.net/?ref=toolbar"
+                ,1005,requestListenter);
+        requestQueue.addRequest(request2);
+        StringRequest request3 = new StringRequest(3,"http://geek.csdn.net/news/detail/34298"
+                ,1002,requestListenter);
+        requestQueue.addRequest(request3);
     }
 
 

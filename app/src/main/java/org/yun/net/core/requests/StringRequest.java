@@ -3,6 +3,7 @@ package org.yun.net.core.requests;
 
 import org.apache.http.NameValuePair;
 import org.yun.net.core.Request;
+import org.yun.net.core.http.YunHttp;
 
 import java.util.List;
 
@@ -21,11 +22,35 @@ public class StringRequest extends Request{
 
     @Override
     protected void startRequest() {
-
+        if(httpHeadMap==null){
+            setDefaultHttpHead();
+        }
+        YunHttp yunHttp = getYunHttp();
+        try {
+            String resultstr;
+            if(nameValuePairList != null&&nameValuePairList.size()>0){
+                resultstr = yunHttp.poet(url,nameValuePairList);
+            }else{
+                resultstr = yunHttp.get(url);
+            }
+            forResult(resultstr);
+        } catch (Exception e) {
+            if(requestListenter != null){
+                requestListenter.onError(e,tag);
+            }
+        }
     }
-
     @Override
-    protected void setHttpHead() {
-
+    protected void forResult(final String resultStr) throws Exception {
+        if(requestListenter != null){
+            mainLooperHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    requestListenter.onComlete(resultStr, tag);
+                }
+            });
+        }
     }
+
+
 }

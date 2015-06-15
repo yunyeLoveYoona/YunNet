@@ -13,7 +13,7 @@ public class YunHttpFactory {
         if(Build.VERSION.SDK_INT<9){
             yunHttp = new YunHttpClient(httpHeadMap);
         }else{
-            yunHttp = new YunHttpConnection(httpHeadMap);
+            yunHttp = new YunHttpUrlConnection(httpHeadMap);
         }
         return yunHttp;
     }
