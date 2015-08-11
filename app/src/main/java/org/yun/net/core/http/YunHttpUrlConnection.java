@@ -1,6 +1,7 @@
 package org.yun.net.core.http;
 
 import org.apache.http.NameValuePair;
+import org.yun.net.core.YunNet;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -45,12 +46,17 @@ public class YunHttpUrlConnection implements YunHttp {
         outputStream.writeBytes(content);
         outputStream.flush();
         outputStream.close();
+        String cookieVal = httpURLConnection.getHeaderField("Set-Cookie");
+        if (cookieVal != null) {
+            YunNet.cookie = cookieVal.substring(0, cookieVal.indexOf(";"));
+        }
         return YunHttpUtil.encodedString(httpURLConnection.getInputStream());
     }
 
     private HttpURLConnection getHttpUrlConnection(String url) throws IOException {
         URL httpUrl = new URL(url);
         HttpURLConnection httpConnection = (HttpURLConnection) httpUrl.openConnection();
+        httpConnection.setRequestProperty("Cookie", YunNet.cookie);
         Iterator iterator = httpHeadMap.entrySet().iterator();
         while (iterator.hasNext()){
             Map.Entry<String,String> entry = (Map.Entry<String, String>) iterator.next();
