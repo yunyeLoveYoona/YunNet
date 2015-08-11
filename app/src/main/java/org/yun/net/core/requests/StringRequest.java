@@ -34,9 +34,14 @@ public class StringRequest extends Request{
                 resultstr = yunHttp.get(url);
             }
             forResult(resultstr);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             if(requestListenter != null){
-                requestListenter.onError(e,tag);
+                mainLooperHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        requestListenter.onError(e, tag);
+                    }
+                });
             }
         }
     }
