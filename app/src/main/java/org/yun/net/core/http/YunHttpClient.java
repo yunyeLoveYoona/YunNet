@@ -40,7 +40,7 @@ public class YunHttpClient implements YunHttp {
     @Override
     public String get(String url) throws IOException {
         HttpGet get = new HttpGet(url);
-        get.setHeader("Cookie", "SESSIONID=" + YunNet.cookie);
+        get.setHeader("Cookie",   YunNet.cookie);
         HttpResponse response = httpClient.execute(get);
         if (response.getStatusLine().getStatusCode() == 200) {
             getCookies(response);
@@ -53,7 +53,7 @@ public class YunHttpClient implements YunHttp {
     public String poet(String url, List<NameValuePair> nameValuePairList) throws IOException {
         HttpPost post = new HttpPost(url);
         HttpEntity httpentity = new UrlEncodedFormEntity(nameValuePairList, YunHttpConfig.ENCODED);
-        post.setHeader("Cookie", "SESSIONID=" + YunNet.cookie);
+        post.setHeader("Cookie",  YunNet.cookie);
         post.setEntity(httpentity);
         HttpResponse response = httpClient.execute(post);
         if (response.getStatusLine().getStatusCode() == 200) {
